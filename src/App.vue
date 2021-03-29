@@ -1,16 +1,15 @@
 <template>
-    <Jogo_senha></Jogo_senha>
+  <JogoSenha />
 </template>
 
 <script>
-import Jogo_senha from './components/Jogo_senha.vue'
+import JogoSenha from "./components/JogoSenha.vue";
 
 export default {
-  name: 'App',
-    
-  components: { Jogo_senha },
-}
+  name: "App",
+
+  components: { JogoSenha },
+};
 </script>
 
-<style>
-</style>
+<style></style>

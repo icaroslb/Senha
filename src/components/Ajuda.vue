@@ -1,24 +1,22 @@
 <template>
-    <div class="caixa">
-        <ajuda_respo :cor="cor_1"></ajuda_respo>
-        <ajuda_respo :cor="cor_2"></ajuda_respo>
-        <ajuda_respo :cor="cor_3"></ajuda_respo>
-        <ajuda_respo :cor="cor_4"></ajuda_respo>
-    </div>
+  <div class="caixa">
+    <ajuda-respo :cor="cor1"></ajuda-respo>
+    <ajuda-respo :cor="cor2"></ajuda-respo>
+    <ajuda-respo :cor="cor3"></ajuda-respo>
+    <ajuda-respo :cor="cor4"></ajuda-respo>
+  </div>
 </template>
 
 <script>
-import ajuda_respo from './Ajuda_respo.vue'
+import AjudaRespo from "./AjudaRespo.vue";
 
 export default {
-    name: 'ajuda',
+  name: "ajuda",
 
-    components: { ajuda_respo },
-    
-    props: [ 'cor_1', 'cor_2', 'cor_3', 'cor_4' ],
-}
+  components: { AjudaRespo },
+
+  props: ["cor1", "cor2", "cor3", "cor4"],
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

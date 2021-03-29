@@ -1,19 +1,17 @@
 <template>
-    <div class="circulo" v-on:click="clique()"></div>
+  <div class="circulo" v-on:click="clique()"></div>
 </template>
 
 <script>
 export default {
-    name: 'circulo',
+  name: "circulo",
 
-    methods: {
-        clique: function () {
-            this.$emit( 'click' )
-        }
-    }
-}
+  methods: {
+    clique: function () {
+      this.$emit("click");
+    },
+  },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>
