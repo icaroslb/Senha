@@ -4,10 +4,17 @@
       v-for="campo in campos"
       :key="campo.id"
       :id="campo.id"
-      v-on:conferir-resposta="conferirResposta"
+      :ativo="campo.ativo"
+      v-on:conferir-resposta="
+        (resposta, ajuda) => conferirResposta(resposta, ajuda)
+      "
       @atualizar-cores="(cores) => atualizarCores(campo.id, cores)"
     >
     </caixa-botao>
+    <button v-if="recomecar" class="botao-infor" v-on:click="reiniciar()">
+      Reiniciar
+    </button>
+    <p v-if="recomecar">{{ mensagem }}</p>
   </div>
 </template>
 
@@ -24,39 +31,53 @@ export default {
     return {
       senhaGerada: [],
       tentativas: 0,
-      campos: [
-        {
-          id: "campo-0",
-          values: ["default", "default", "default", "default"],
-        },
-      ],
+      recomecar: false,
+      mensagem: "",
+      campos: [],
       acertou: false,
     };
   },
+
+  //{
+  //  id: "campo-0",
+  //  values: ["default", "default", "default", "default"],
+  //  ativo: true,
+  //},
 
   mounted() {
     this.acertou = false;
 
     console.log("app-vue:", document.getElementById("Jogo_senha"));
 
-    let indices = [0, 1, 2, 3, 4, 5, 6];
-    let num_gerado;
-    this.senha_gerada = [];
+    this.gerarSenha();
 
-    for (let i = 0; i < 4; i++) {
-      num_gerado = this.numRandomico(0, 7 - i);
-      this.senha_gerada.push(coresPadrao[indices[num_gerado]]);
-      indices[num_gerado] = indices[indices.length - 1];
-      indices.pop();
-    }
+    this.adicionarNovaSenha();
+  },
 
-    console.log(this.senha_gerada);
-    // this.adicionarNovaSenha("default", "default", "default", "default");
+  updated() {
+    if (this.campos.length === 0) this.adicionarNovaSenha();
   },
 
   methods: {
     numRandomico(min, max) {
       return Math.floor(Math.random() * (max - min) + min);
+    },
+
+    gerarSenha() {
+      let indices = [];
+      let num_gerado;
+      this.senha_gerada = [];
+
+      for (let i = 0; i < coresPadrao.length; i++) indices.push(i);
+
+      for (let i = 0; i < 4; i++) {
+        num_gerado = this.numRandomico(0, 7 - i);
+        this.senha_gerada.push(coresPadrao[indices[num_gerado]]);
+        indices[num_gerado] = indices[indices.length - 1];
+        indices.pop();
+      }
+
+      console.log(this.senha_gerada);
     },
 
     atualizarCores(id, cores) {
@@ -68,61 +89,54 @@ export default {
       this.campos.push({
         id: `campo-${this.campos.length}`,
         values: ["default", "default", "default", "default"],
+        ativo: true,
       });
-
-      // let novo_id = "campo_" + this.campos.length;
-      // document.getElementById("Jogo_senha").innerHTML +=
-      //   "<caixa-botao id=" +
-      //   novo_id +
-      //   ' v-on:conferir_resposta="conferirResposta"></caixa-botao>';
-
-      // let novo_campo = new Vue({ el: "#" + novo_id });
-      // this.campos.push(novo_campo);
-
-      // novo_campo.cor_1 = cor_1;
-      // novo_campo.cor_2 = cor_2;
-      // novo_campo.cor_3 = cor_3;
-      // novo_campo.cor_4 = cor_4;
-
-      // console.log(novo_campo);
     },
 
-    conferirResposta() {
-      let campo = this.campos[this.campos.length - 1];
-      console.log(campo);
-      let ajuda = ["default", "default", "default", "default"];
-      let senha = campo.values;
+    conferirResposta(resposta, ajuda) {
       let resposta_certa = true;
 
       for (let i = 0; i < 4; i++) {
-        if (senha[i] === this.senha_gerada[i]) {
-          ajuda[i] = "preto";
+        if (resposta[i].cor === this.senha_gerada[i]) {
+          ajuda[`cor${i + 1}`] = "preto";
         } else {
           resposta_certa = false;
 
           for (let j = 0; j < 4; j++) {
-            if (i != j && senha[i] === this.senha_gerada[j]) {
-              ajuda[i] = "branco";
+            if (i != j && resposta[i].cor === this.senha_gerada[j]) {
+              ajuda[`cor${i + 1}`] = "branco";
               break;
             }
           }
         }
       }
 
-      campo.ajuda_1 = ajuda[0];
-      campo.ajuda_2 = ajuda[1];
-      campo.ajuda_3 = ajuda[2];
-      campo.ajuda_4 = ajuda[3];
+      this.campos[this.campos.length - 1].ativo = false;
 
       if (resposta_certa) {
         console.log("Você acertou!!! :)");
         this.resposta = resposta_certa;
+
+        this.mensagem = "Você acertou!";
+        this.recomecar = true;
       } else {
         console.log("Ainda não :(");
-        this.adicionarNovaSenha();
-      }
 
-      campo.seen = false;
+        if (this.campos.length < 10) {
+          this.adicionarNovaSenha();
+        } else {
+          this.mensagem = "Você não conseguiu!";
+          this.recomecar = true;
+        }
+      }
+    },
+
+    reiniciar() {
+      this.campos = [];
+
+      this.recomecar = false;
+
+      this.gerarSenha();
     },
   },
 };
@@ -226,7 +240,7 @@ export default {
   margin-left: 15px;
 }
 
-.botao_inserir {
+.botao-infor {
   overflow: auto;
   margin-top: 36px;
 

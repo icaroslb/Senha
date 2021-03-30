@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ajuda v-bind="coresAjuda"></ajuda>
+    <ajuda v-bind="coresAjuda" />
     <div class="inline_block">
       <botao-cor
         v-for="senha in coresSenha"
@@ -11,7 +11,7 @@
       ></botao-cor>
     </div>
     <div class="inline_block inserir_senha">
-      <botao-inserir v-on:click="conferir_resposta"> </botao-inserir>
+      <botao-inserir v-on:click="conferir_resposta" v-if="ativo" />
     </div>
   </div>
 </template>
@@ -24,6 +24,8 @@ import { coresPadrao } from "../methods.js";
 
 export default {
   name: "caixa_botao",
+
+  props: ["ativo"],
 
   data() {
     return {
@@ -71,7 +73,6 @@ export default {
   watch: {
     coresSenha: {
       handler(value) {
-        console.log(value);
         const cores = value.map(({ cor }) => cor);
         this.$emit("atualizar-cores", cores);
       },
@@ -89,7 +90,7 @@ export default {
     },
 
     conferir_resposta() {
-      this.$emit("conferir-resposta");
+      this.$emit("conferir-resposta", this.coresSenha, this.coresAjuda);
     },
   },
 };

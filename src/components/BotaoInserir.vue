@@ -1,5 +1,5 @@
 <template>
-  <button class="inline_block botao_inserir" v-if="seen" v-on:click="clique">
+  <button class="inline_block botao-infor" v-if="seen" v-on:click="clique">
     Inserir senha
   </button>
 </template>

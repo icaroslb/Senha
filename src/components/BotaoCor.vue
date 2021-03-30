@@ -1,11 +1,6 @@
 <template>
   <div class="botao">
-    <circulo
-      class="acionador"
-      :class="cor"
-      :cor_pai="cor"
-      v-on:click="troca_cor()"
-    ></circulo>
+    <circulo class="acionador" :class="cor" v-on:click="troca_cor()" />
   </div>
 </template>
 
@@ -18,12 +13,6 @@ export default {
   components: { circulo },
 
   props: ["cor"],
-
-  data: function () {
-    return {
-      cor_pai: this.cor,
-    };
-  },
 
   methods: {
     troca_cor: function () {
