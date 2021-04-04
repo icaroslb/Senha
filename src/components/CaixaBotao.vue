@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div :class="highlight">
     <ajuda v-bind="coresAjuda" />
-    <div class="inline_block">
+    <div class="inline_block caixa_botao">
       <botao-cor
         v-for="senha in coresSenha"
         v-bind:key="senha.id"
@@ -10,16 +10,15 @@
         v-on:click="() => mudarCor(senha.id)"
       ></botao-cor>
     </div>
-    <div class="inline_block inserir_senha">
+    <!--<div class="inline_block inserir_senha">
       <botao-inserir v-on:click="conferir_resposta" v-if="ativo" />
-    </div>
+    </div>-->
   </div>
 </template>
 
 <script>
 import Ajuda from "./Ajuda.vue";
 import BotaoCor from "./BotaoCor.vue";
-import BotaoInserir from "./BotaoInserir.vue";
 import { coresPadrao } from "../methods.js";
 
 export default {
@@ -30,8 +29,7 @@ export default {
   data() {
     return {
       coresPadrao,
-      atualiza: true,
-
+      highlight: "highlight",
       coresSenha: [
         {
           id: 0,
@@ -57,7 +55,7 @@ export default {
     };
   },
 
-  components: { Ajuda, BotaoCor, BotaoInserir },
+  components: { Ajuda, BotaoCor },
 
   computed: {
     coresAjuda() {
@@ -78,22 +76,52 @@ export default {
       },
       deep: true,
     },
+
+    ativo: {
+      handler() {
+        this.conferir_resposta();
+      },
+    },
   },
 
   methods: {
     mudarCor(index) {
-      this.coresSenha[index].num =
-        this.coresSenha[index].num < this.coresPadrao.length - 1
-          ? this.coresSenha[index].num + 1
-          : 0;
-      this.coresSenha[index].cor = this.coresPadrao[this.coresSenha[index].num];
+      if (this.ativo) {
+        this.coresSenha[index].num =
+          this.coresSenha[index].num < this.coresPadrao.length - 1
+            ? this.coresSenha[index].num + 1
+            : 0;
+        this.coresSenha[index].cor = this.coresPadrao[
+          this.coresSenha[index].num
+        ];
+      }
     },
 
     conferir_resposta() {
       this.$emit("conferir-resposta", this.coresSenha, this.coresAjuda);
+      this.highlight = "";
     },
   },
 };
 </script>
 
-<style></style>
+<style>
+.caixa_botao {
+  width: 80%;
+  height: 100%;
+}
+
+.inserir_senha {
+  width: 5%;
+  height: 100%;
+
+  box-sizing: border-box;
+  position: absolute;
+}
+
+.highlight {
+  background-color: burlywood;
+  background-color: #e9d0af;
+  border-radius: 10px;
+}
+</style>

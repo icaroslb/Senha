@@ -1,5 +1,5 @@
 <template>
-  <div class="caixa">
+  <div class="ajuda">
     <ajuda-respo :cor="cor1"></ajuda-respo>
     <ajuda-respo :cor="cor2"></ajuda-respo>
     <ajuda-respo :cor="cor3"></ajuda-respo>
@@ -19,4 +19,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.ajuda {
+  width: 20%;
+  height: 100%;
+
+  display: inline-block;
+}
+</style>

@@ -1,5 +1,7 @@
 <template>
-  <JogoSenha />
+  <div class="container">
+    <JogoSenha />
+  </div>
 </template>
 
 <script>
@@ -12,4 +14,17 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+body {
+  margin: 0px;
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+</style>

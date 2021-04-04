@@ -16,4 +16,12 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.caixa_metade {
+  width: 40%;
+  height: 40%;
+
+  display: inline-block;
+  padding: 5% 5% 5% 5%;
+}
+</style>

@@ -22,4 +22,14 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.botao {
+  width: 23%;
+  height: 98%;
+  padding: 1%;
+}
+
+.acionador {
+  cursor: pointer;
+}
+</style>

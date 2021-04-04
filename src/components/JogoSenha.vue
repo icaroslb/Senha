@@ -1,7 +1,9 @@
 <template>
   <div id="Jogo_senha">
+    <resposta :cores="senhaGerada" :recomecar="recomecar" />
     <caixa-botao
       v-for="campo in campos"
+      class="campo"
       :key="campo.id"
       :id="campo.id"
       :ativo="campo.ativo"
@@ -11,51 +13,70 @@
       @atualizar-cores="(cores) => atualizarCores(campo.id, cores)"
     >
     </caixa-botao>
-    <button v-if="recomecar" class="botao-infor" v-on:click="reiniciar()">
-      Reiniciar
-    </button>
-    <p v-if="recomecar">{{ mensagem }}</p>
+    <rodape
+      :recomecar="recomecar"
+      :ganhou="ganhou"
+      @conferirCampo="desativarCampo"
+      @reiniciar="reiniciar"
+    />
   </div>
 </template>
 
 <script>
+import resposta from "./Resposta.vue";
 import caixaBotao from "./CaixaBotao.vue";
+import rodape from "./Rodape.vue";
 import { coresPadrao } from "../methods.js";
 
 export default {
   name: "JogoSenha",
 
-  components: { caixaBotao },
+  components: { resposta, caixaBotao, rodape },
 
   data() {
     return {
-      senhaGerada: [],
+      senhaGerada: [
+        {
+          id: 0,
+          cor: "default",
+        },
+        {
+          id: 1,
+          cor: "default",
+        },
+        {
+          id: 2,
+          cor: "default",
+        },
+        {
+          id: 3,
+          cor: "default",
+        },
+      ],
       tentativas: 0,
       recomecar: false,
-      mensagem: "",
-      campos: [],
+      ganhou: false,
+      campos: [
+        //{
+        //  id: "campo-0",
+        //  values: ["default", "default", "default", "default"],
+        //  ativo: true,
+        //},
+      ],
       acertou: false,
     };
   },
 
-  //{
-  //  id: "campo-0",
-  //  values: ["default", "default", "default", "default"],
-  //  ativo: true,
-  //},
-
   mounted() {
     this.acertou = false;
 
-    console.log("app-vue:", document.getElementById("Jogo_senha"));
-
     this.gerarSenha();
 
-    this.adicionarNovaSenha();
+    this.adicionarNovoCampo();
   },
 
   updated() {
-    if (this.campos.length === 0) this.adicionarNovaSenha();
+    if (this.campos.length === 0) this.adicionarNovoCampo();
   },
 
   methods: {
@@ -66,18 +87,19 @@ export default {
     gerarSenha() {
       let indices = [];
       let num_gerado;
-      this.senha_gerada = [];
+      let novaSenha = [];
 
       for (let i = 0; i < coresPadrao.length; i++) indices.push(i);
 
       for (let i = 0; i < 4; i++) {
         num_gerado = this.numRandomico(0, 7 - i);
-        this.senha_gerada.push(coresPadrao[indices[num_gerado]]);
+        novaSenha.push(coresPadrao[indices[num_gerado]]);
         indices[num_gerado] = indices[indices.length - 1];
         indices.pop();
       }
 
-      console.log(this.senha_gerada);
+      for (let i = 0; i < this.senhaGerada.length; i++)
+        this.senhaGerada[i].cor = novaSenha[i];
     },
 
     atualizarCores(id, cores) {
@@ -85,7 +107,7 @@ export default {
       campo.values = cores;
     },
 
-    adicionarNovaSenha() {
+    adicionarNovoCampo() {
       this.campos.push({
         id: `campo-${this.campos.length}`,
         values: ["default", "default", "default", "default"],
@@ -93,17 +115,21 @@ export default {
       });
     },
 
+    desativarCampo() {
+      this.campos[this.campos.length - 1].ativo = false;
+    },
+
     conferirResposta(resposta, ajuda) {
       let resposta_certa = true;
 
       for (let i = 0; i < 4; i++) {
-        if (resposta[i].cor === this.senha_gerada[i]) {
+        if (resposta[i].cor === this.senhaGerada[i].cor) {
           ajuda[`cor${i + 1}`] = "preto";
         } else {
           resposta_certa = false;
 
           for (let j = 0; j < 4; j++) {
-            if (i != j && resposta[i].cor === this.senha_gerada[j]) {
+            if (i != j && resposta[i].cor === this.senhaGerada[j].cor) {
               ajuda[`cor${i + 1}`] = "branco";
               break;
             }
@@ -111,21 +137,15 @@ export default {
         }
       }
 
-      this.campos[this.campos.length - 1].ativo = false;
-
       if (resposta_certa) {
-        console.log("Você acertou!!! :)");
         this.resposta = resposta_certa;
 
-        this.mensagem = "Você acertou!";
+        this.ganhou = true;
         this.recomecar = true;
       } else {
-        console.log("Ainda não :(");
-
         if (this.campos.length < 10) {
-          this.adicionarNovaSenha();
+          this.adicionarNovoCampo();
         } else {
-          this.mensagem = "Você não conseguiu!";
           this.recomecar = true;
         }
       }
@@ -135,119 +155,53 @@ export default {
       this.campos = [];
 
       this.recomecar = false;
+      this.ganhou = false;
 
       this.gerarSenha();
+
+      window.scrollTo(0, 0);
     },
   },
 };
 </script>
 
 <style>
-* {
-  background-color: peru;
+#Jogo_senha {
+  --largura: 390px;
+  --altura: 900px;
+
+  --campo-altura: calc((var(--altura) - 120px) / 10);
+
+  width: var(--largura);
+  height: var(--altura);
+
+  background-color: burlywood;
+  padding: calc(var(--campo-altura) + 12px) 10px
+    calc(var(--campo-altura) + 12px) 10px;
 }
 
-.botao {
-  width: 90px;
-  height: 90px;
-
-  padding: 10px;
+body {
+  background-color: #6c7a89;
 }
 
-.caixa {
-  width: 90px;
-  height: 90px;
+.campo {
+  width: var(--largura);
+  height: var(--campo-altura);
 
-  display: inline-block;
-}
-
-.caixa_metade {
-  width: 45%;
-  height: 45%;
-
-  display: inline-block;
-
-  padding: 1% 1% 1% 1%;
-}
-
-.circulo {
-  width: 100%;
-  height: 100%;
-
-  display: inline-block;
-
-  border-radius: 100%;
-  border: solid black 2px;
-
-  background-color: #aa6a2c;
-}
-
-.acionador {
-  cursor: pointer;
-}
-
-.amarelo {
-  background-color: yellow;
-}
-
-.azul {
-  background-color: blue;
-}
-
-.vermelho {
-  background-color: red;
-}
-
-.verde {
-  background-color: green;
-}
-
-.rosa {
-  background-color: pink;
-}
-
-.roxo {
-  background-color: purple;
-}
-
-.laranja {
-  background-color: orange;
-}
-
-.default {
-  background-color: #aa6a2c;
-}
-
-.preto {
-  background-color: black;
-}
-
-.branco {
-  background-color: white;
+  padding: 4px 0px 8px 0px;
 }
 
 .inline_block {
   display: inline-block;
 }
 
-.inserir_senha {
-  width: 90px;
-  height: 110px;
-
-  box-sizing: border-box;
-  position: absolute;
-
-  margin-left: 15px;
-}
-
 .botao-infor {
-  overflow: auto;
   margin-top: 36px;
 
   border-radius: 5%;
   border: solid black 2px;
 
-  background-color: #aa6a2c;
+  background-color: #d3a05f;
 
   font-weight: bolder;
 
